@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique // Clerk user ID
+  email     String   @unique
+  username  String   @unique
+  firstName String?
+  lastName  String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  repositories Repository[]
+  
+  @@map("users")
+}
+
+model Repository {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isPrivate   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Foreign Keys
+  userId      String
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commits     Commit[]
+  
+  @@unique([userId, name]) // User can't have duplicate repo names
+  @@map("repositories")
+}
+
+model Commit {
+  id            String   @id @default(cuid())
+  commitHash    String   @unique // SHA hash of the commit
+  message       String
+  timestamp     DateTime @default(now())
+  
+  // File structure stored as JSON
+  fileStructure Json     // Tree structure of files and folders
+  
+  // Metadata
+  authorName    String
+  authorEmail   String
+  
+  // Foreign Keys
+  repositoryId  String
+  
+  // Relations
+  repository    Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  
+  @@map("commits")
+}
