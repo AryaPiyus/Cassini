@@ -8,7 +8,7 @@ export default function LandingNavbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="text-white text-xl font-bold">
-              BOLT
+              ERIS
             </Link>
           </div>
           <div className="flex items-center space-x-4">
