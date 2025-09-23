@@ -7,7 +7,7 @@ export default async function DashboardPage() {
   const user = await currentUser()
   
   if (!user) {
-    return <div>Please sign in</div>
+    return <div className='flex text-xl font-bold text-center justify-content '>Please sign in <Link href='/sign-in'>Sign in</Link></div>
   }
 
   try {
@@ -18,9 +18,18 @@ export default async function DashboardPage() {
         repositories: {
           orderBy: { updatedAt: 'desc' },
           take: 5 // Show only recent 5 repos
-        }
+        },
+        
       }
     })
+    console.log('DbUser fields:', {
+      id: dbUser?.id,
+      email: dbUser?.email,
+      username: dbUser?.username,
+      firstName: dbUser?.firstName,
+      lastName: dbUser?.lastName,
+      avatar: dbUser?.avatar
+    });
 
     const repoCount = await prisma.repository.count({
       where: { 
@@ -33,7 +42,7 @@ export default async function DashboardPage() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome back, {user.firstName || 'Developer'}!
+            Welcome back, {dbUser?.firstName || 'Developer'}!
           </h1>
           <p className="text-gray-400">
             Here's what's happening with your repositories
