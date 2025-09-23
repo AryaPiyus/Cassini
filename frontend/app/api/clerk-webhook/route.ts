@@ -58,12 +58,14 @@ export async function POST(req: Request) {
 
   const { type, data } = evt
   console.log('🎯 Event type:', type)
+  console.log('👤 Full data object:', JSON.stringify(data, null, 2))
   console.log('👤 User data received:', {
     id: data.id,
-    email: data.email_addresses?.[0]?.email_address,
-    username: data.username,
-    first_name: data.first_name,
-    last_name: data.last_name
+    email: (data as any).email_addresses?.[0]?.email_address,
+    username: (data as any).username,
+    first_name: (data as any).first_name,
+    last_name: (data as any).last_name,
+    unsafe_metadata: (data as any).unsafe_metadata
   })
 
   try {
@@ -72,11 +74,11 @@ export async function POST(req: Request) {
       
       const userData = {
         clerkId: data.id,
-        email: data.email_addresses?.[0]?.email_address || '',
-        username: data.username || `user_${data.id.slice(-8)}`,
-        firstName: data.first_name || null,
-        lastName: data.last_name || null,
-        avatar: data.image_url || data.profile_image_url || null,
+        email: (data as any).email_addresses?.[0]?.email_address || '',
+        username: (data as any).username || `user_${data.id.slice(-8)}`,
+        firstName: (data as any).first_name || (data as any).unsafe_metadata?.firstName || null,
+        lastName: (data as any).last_name || (data as any).unsafe_metadata?.lastName || null,
+        avatar: (data as any).image_url || (data as any).profile_image_url || null,
       }
 
       console.log('💾 About to save user data:', userData)
@@ -104,17 +106,17 @@ export async function POST(req: Request) {
     console.log('⚠️ Unhandled event type:', type)
     return NextResponse.json({ status: 'ignored', type })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Database error:', error)
     console.error('Error details:', {
-      message: error.message,
-      code: error.code,
-      meta: error.meta
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta
     })
     
     return NextResponse.json({ 
       error: 'Database error', 
-      details: error.message 
+      details: error?.message 
     }, { status: 500 })
   }
 }
