@@ -13,7 +13,7 @@ export default function Home() {
       <div className="flex flex-col justify-center items-center min-h-[calc(100vh-4rem)] px-4">
         <div className="text-center max-w-4xl">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            Welcome to <span className="text-blue-400">BOLT</span>
+            Welcome to <span className="text-blue-400">ERIS</span>
           </h1>
           <p className="text-xl text-gray-300 mb-8 leading-relaxed">
             Your code repository platform. Store, manage, and collaborate on
